@@ -78,7 +78,7 @@ extension UniversalGoogleAnalytics.Tracker {
             GAParam.Apps.applicationID(appInfoProvider.applicationIdentifier),
             GAParam.User.clientID(clientIdentifier),
             GAParam.Apps.applicationName(appInfoProvider.applicationName),
-            GAParam.Apps.applicationVersion("\(appInfoProvider.applicationVersion) \(appInfoProvider.applicationBuild)"),
+            GAParam.Apps.applicationVersion("\(appInfoProvider.applicationVersion) (\(appInfoProvider.applicationBuild))"),
             GAParam.Session.userAgentOverride("custom"),
             GAParam.SystemInfo.userLanguage(deviceInfoProvider.userLanguage),
             GAParam.SystemInfo.screenResolution(deviceInfoProvider.screenResolution),

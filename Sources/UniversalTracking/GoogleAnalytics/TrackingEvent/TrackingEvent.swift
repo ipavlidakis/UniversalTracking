@@ -15,6 +15,8 @@ struct TrackingEvent {
 extension TrackingEvent {
 
     static func forScreenView(
+        appName: String,
+        appVersion: String,
         appIdentifier: String,
         screenClass: String,
         screenTitle: String,
@@ -22,7 +24,9 @@ extension TrackingEvent {
     ) -> TrackingEvent {
         let requiredParameters = [
             GAParam.Hit.hitType(.screenview),
-            GAParam.ContentInformation.documentHostName(appIdentifier),
+            GAParam.Apps.applicationName(appName),
+            GAParam.Apps.applicationVersion(appVersion),
+            GAParam.Apps.applicationID(appIdentifier),
             GAParam.ContentInformation.documentPath("/\(screenClass)"),
             GAParam.ContentInformation.documentTitle(screenTitle),
         ]
