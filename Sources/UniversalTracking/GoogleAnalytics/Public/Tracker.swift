@@ -39,10 +39,11 @@ extension UniversalGoogleAnalytics {
         private let maxNoOfElements: Int
         private let maxFlushInterval: TimeInterval
 
-        private lazy var operationQueue: OperationQueue = { let operationQueue = OperationQueue(); operationQueue.maxConcurrentOperationCount = 1; operationQueue.qualityOfService = .background; return operationQueue }()
         private lazy var baseURL = URL(string: "https://www.google-analytics.com/")!
         private lazy var collectURL = baseURL.appendingPathComponent("collect")
         private lazy var batchURL = baseURL.appendingPathComponent("batch")
+
+        private var operationQueue: OperationQueue!
         private var trackingEventsBuffer: ArrayBuffer<TrackingEvent>!
 
         public init(
@@ -57,9 +58,14 @@ extension UniversalGoogleAnalytics {
 
             super.init()
 
-            self.trackingEventsBuffer = ArrayBuffer<TrackingEvent>(maxNoOfElements: maxNoOfElements, maxFlushInterval: maxFlushInterval, flushClosure: { [weak self] elements in
-                self?.operationQueue.addOperation { [weak self] in self?.batch(elements) }
-            })
+            self.operationQueue = OperationQueue()
+//            operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.qualityOfService = .default
+
+            self.trackingEventsBuffer = ArrayBuffer<TrackingEvent>(
+                maxNoOfElements: maxNoOfElements,
+                maxFlushInterval: maxFlushInterval,
+                flushClosure: { [weak self] elements in self?.operationQueue.addOperation { [weak self] in self?.batch(elements) } })
         }
     }
 }

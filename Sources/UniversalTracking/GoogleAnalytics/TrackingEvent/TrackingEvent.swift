@@ -7,9 +7,13 @@
 
 import Foundation
 
-struct TrackingEvent {
+struct TrackingEvent: CustomDebugStringConvertible {
 
     let parameters: [GAParam]
+
+    var debugDescription: String {
+        return "Type: \(parameters.first(where: { $0.parameter == "t" })?.value ?? "(not set)")"
+    }
 }
 
 extension TrackingEvent {
