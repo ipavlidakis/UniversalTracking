@@ -158,6 +158,8 @@ extension UniversalGoogleAnalytics.Tracker {
         screenTitle: String
     ) {
         let trackingEvent = TrackingEvent.forScreenView(
+            appName: appInfoProvider.applicationName,
+            appVersion: appInfoProvider.applicationVersion,
             appIdentifier: appInfoProvider.applicationIdentifier,
             screenClass: screenClass,
             screenTitle: screenTitle
