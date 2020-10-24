@@ -22,7 +22,7 @@ extension UniversalGoogleAnalytics {
 
     public final class Tracker: NSObject {
 
-        public lazy var `default`: Tracker = Tracker()
+        public static var `default`: Tracker = Tracker()
 
         // Configuration
         public var trackerID: String?
