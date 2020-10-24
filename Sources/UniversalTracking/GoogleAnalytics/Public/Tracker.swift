@@ -31,6 +31,7 @@ extension UniversalGoogleAnalytics {
         // Providers
         public var appInfoProvider: AppInfoProviding = Bundle.main { didSet { _requiredParameters = nil } }
         public var deviceInfoProvider: DeviceInfoProviding = DeviceInfoProvider() { didSet { _requiredParameters = nil } }
+        public var userAgentProvider: UserAgentProviding = UserAgentProvider()
         public var clientIdentifier: String {
             willSet { assert(clientIdentifier.isEmpty) }
             didSet { _requiredParameters = nil }
@@ -58,7 +59,7 @@ extension UniversalGoogleAnalytics {
                         GAParam.User.clientID(clientIdentifier),
                         GAParam.Apps.applicationName(appInfoProvider.applicationName),
                         GAParam.Apps.applicationVersion("\(appInfoProvider.applicationVersion) (\(appInfoProvider.applicationBuild))"),
-                        GAParam.Session.userAgentOverride("custom"),
+                        GAParam.Session.userAgentOverride(userAgentProvider.userAgent),
                         GAParam.SystemInfo.userLanguage(deviceInfoProvider.userLanguage),
                         GAParam.SystemInfo.screenResolution(deviceInfoProvider.screenResolution),
                         GAParam.General.anonymizeIP(annonymizeIP),
