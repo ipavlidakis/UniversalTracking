@@ -43,9 +43,7 @@ extension UniversalGoogleAnalytics {
         private lazy var baseURL = URL(string: "https://www.google-analytics.com/")!
         private lazy var collectURL = baseURL.appendingPathComponent("collect")
         private lazy var batchURL = baseURL.appendingPathComponent("batch")
-        private lazy var trackingEventsBuffer = ArrayBuffer<TrackingEvent>(maxNoOfElements: maxNoOfElements, maxFlushInterval: maxFlushInterval, flushClosure: { [weak self] elements in
-            self?.operationQueue.addOperation { [weak self] in self?.batch(elements) }
-        })
+        private var trackingEventsBuffer: ArrayBuffer<TrackingEvent>!
 
         public init(
             _ session: URLSession = .shared,
@@ -58,6 +56,10 @@ extension UniversalGoogleAnalytics {
             self.clientIdentifier = _clientIdentifier()
 
             super.init()
+
+            self.trackingEventsBuffer = ArrayBuffer<TrackingEvent>(maxNoOfElements: maxNoOfElements, maxFlushInterval: maxFlushInterval, flushClosure: { [weak self] elements in
+                self?.operationQueue.addOperation { [weak self] in self?.batch(elements) }
+            })
         }
     }
 }
