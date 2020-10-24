@@ -28,13 +28,16 @@ final class ArrayBuffer<Element> {
         self.timer = Timer.scheduledTimer(withTimeInterval: maxFlushInterval, repeats: true, block: self.flush)
     }
 
+    deinit {
+        lock.signal()
+    }
+
     func append(_ element: Element) {
         lock.wait()
         _elements.append(element)
         if _elements.count >= maxNoOfElements {
             let copyElements = _elements
             _elements = []
-            timer.invalidate()
             lock.signal()
             flush(copyElements)
         } else {
