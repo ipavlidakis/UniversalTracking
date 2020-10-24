@@ -25,14 +25,15 @@ extension UniversalGoogleAnalytics {
         public static var `default`: Tracker = Tracker()
 
         // Configuration
-        public var trackerID: String?
-        public var annonymizeIP: Bool = true
+        public var trackerID: String? { didSet { _requiredParameters = nil } }
+        public var annonymizeIP: Bool = true { didSet { _requiredParameters = nil } }
 
         // Providers
-        public var appInfoProvider: AppInfoProviding = Bundle.main
-        public var deviceInfoProvider: DeviceInfoProviding = DeviceInfoProvider()
+        public var appInfoProvider: AppInfoProviding = Bundle.main { didSet { _requiredParameters = nil } }
+        public var deviceInfoProvider: DeviceInfoProviding = DeviceInfoProvider() { didSet { _requiredParameters = nil } }
         public var clientIdentifier: String {
             willSet { assert(clientIdentifier.isEmpty) }
+            didSet { _requiredParameters = nil }
         }
 
         private let session: URLSession
@@ -45,6 +46,27 @@ extension UniversalGoogleAnalytics {
 
         private var operationQueue: OperationQueue!
         private var trackingEventsBuffer: ArrayBuffer<TrackingEvent>!
+
+        private var _requiredParameters: [GAParam]?
+        private var requiredParameters: [GAParam]! {
+            get {
+                if _requiredParameters == nil, let trackerID = trackerID {
+                    _requiredParameters = [
+                        GAParam.General.protocolVersion(),
+                        GAParam.General.measurementID(trackerID),
+                        GAParam.Apps.applicationID(appInfoProvider.applicationIdentifier),
+                        GAParam.User.clientID(clientIdentifier),
+                        GAParam.Apps.applicationName(appInfoProvider.applicationName),
+                        GAParam.Apps.applicationVersion("\(appInfoProvider.applicationVersion) (\(appInfoProvider.applicationBuild))"),
+                        GAParam.Session.userAgentOverride("custom"),
+                        GAParam.SystemInfo.userLanguage(deviceInfoProvider.userLanguage),
+                        GAParam.SystemInfo.screenResolution(deviceInfoProvider.screenResolution),
+                        GAParam.General.anonymizeIP(annonymizeIP),
+                    ]
+                }
+                return _requiredParameters!
+            }
+        }
 
         public init(
             _ session: URLSession = .shared,
@@ -59,7 +81,7 @@ extension UniversalGoogleAnalytics {
             super.init()
 
             self.operationQueue = OperationQueue()
-//            operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.maxConcurrentOperationCount = 1
             operationQueue.qualityOfService = .default
 
             self.trackingEventsBuffer = ArrayBuffer<TrackingEvent>(
@@ -75,25 +97,14 @@ extension UniversalGoogleAnalytics.Tracker {
     private func collect(
         _ trackingEvent: TrackingEvent
     ) {
-        guard let trackerID = trackerID else {
+        guard trackerID != nil else {
             assertionFailure("You must first configure the tracker ID")
             return
         }
 
-        let requiredParameters = [
-            GAParam.General.protocolVersion(),
-            GAParam.General.measurementID(trackerID),
-            GAParam.Apps.applicationID(appInfoProvider.applicationIdentifier),
-            GAParam.User.clientID(clientIdentifier),
-            GAParam.Apps.applicationName(appInfoProvider.applicationName),
-            GAParam.Apps.applicationVersion("\(appInfoProvider.applicationVersion) (\(appInfoProvider.applicationBuild))"),
-            GAParam.Session.userAgentOverride("custom"),
-            GAParam.SystemInfo.userLanguage(deviceInfoProvider.userLanguage),
-            GAParam.SystemInfo.screenResolution(deviceInfoProvider.screenResolution),
-            GAParam.General.anonymizeIP(annonymizeIP),
-        ].combineUniquely(with: trackingEvent.parameters)
+        let parameters = self.requiredParameters.combineUniquely(with: trackingEvent.parameters)
 
-        let queryItems = requiredParameters.map { URLQueryItem(name: $0.parameter, value: $0.value) }
+        let queryItems = parameters.map { URLQueryItem(name: $0.parameter, value: $0.value) }
 
         var request = URLRequest(
             url: collectURL.appenQueryItems(queryItems),
@@ -115,26 +126,14 @@ extension UniversalGoogleAnalytics.Tracker {
     private func batch(
         _ trackingEvents: [TrackingEvent]
     ) {
-        guard let trackerID = trackerID else {
+        guard trackerID != nil else {
             assertionFailure("You must first configure the tracker ID")
             return
         }
 
-        let requiredParameters = [
-            GAParam.General.protocolVersion(),
-            GAParam.General.measurementID(trackerID),
-            GAParam.Apps.applicationID(appInfoProvider.applicationIdentifier),
-            GAParam.User.clientID(clientIdentifier),
-            GAParam.Apps.applicationName(appInfoProvider.applicationName),
-            GAParam.Apps.applicationVersion("\(appInfoProvider.applicationVersion) \(appInfoProvider.applicationBuild)"),
-            GAParam.Session.userAgentOverride("custom"),
-            GAParam.SystemInfo.userLanguage(deviceInfoProvider.userLanguage),
-            GAParam.SystemInfo.screenResolution(deviceInfoProvider.screenResolution),
-            GAParam.General.anonymizeIP(annonymizeIP),
-        ]
-
+        let parameters = self.requiredParameters!
         let body = trackingEvents
-            .map { requiredParameters.combineUniquely(with: $0.parameters) }
+            .map { parameters.combineUniquely(with: $0.parameters) }
             .map { $0.map { "\($0.parameter)=\($0.value)" } }
             .map { $0.joined(separator: "&") }
             .joined(separator: "\n")

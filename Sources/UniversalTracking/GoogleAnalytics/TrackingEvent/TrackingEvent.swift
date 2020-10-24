@@ -10,7 +10,6 @@ import Foundation
 struct TrackingEvent {
 
     let parameters: [GAParam]
-    var type: String? { parameters.first(where: { $0.parameter == "t" })?.value }
 }
 
 extension TrackingEvent {
@@ -85,9 +84,4 @@ extension TrackingEvent {
             parameters: requiredParameters.combineUniquely(with: additionalParamaters)
         )
     }
-}
-
-extension TrackingEvent {
-
-
 }
