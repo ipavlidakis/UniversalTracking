@@ -153,6 +153,18 @@ extension UniversalGoogleAnalytics.Tracker {
 
 extension UniversalGoogleAnalytics.Tracker {
 
+    public func logScreenView(
+        screenClass: String,
+        screenTitle: String
+    ) {
+        let trackingEvent = TrackingEvent.forScreenView(
+            appIdentifier: appInfoProvider.applicationIdentifier,
+            screenClass: screenClass,
+            screenTitle: screenTitle
+        )
+        trackingEventsBuffer.append(trackingEvent)
+    }
+
     public func logPageView(
         screenClass: String,
         screenTitle: String
