@@ -27,15 +27,19 @@ final class UserAgentProvider: UserAgentProviding {
         #if os(OSX)
         let osVersion = ProcessInfo.processInfo.operatingSystemVersionString
         let versionString = osVersion.replacingOccurrences(of: ".", with: "_")
-        let fallbackAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X \(versionString)) AppleWebKit/603.2.4 (KHTML, like Gecko) \(self.appName)/\(self.appVersion)"
+        let fallbackAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X \(versionString)) AppleWebKit/603.2.4 (KHTML, like Gecko)"
         #elseif os(watchOS)
         let currentDevice = WKInterfaceDevice.current()
         let osVersion = currentDevice.systemVersion.replacingOccurrences(of: ".", with: "_")
-        let fallbackAgent = "Mozilla/5.0 (\(currentDevice.model); CPU watch OS \(osVersion) like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13T534YI"
+        let fallbackAgent = "atc/1.0 watchOS/\(osVersion) model/Watch5,2 hwp/t8006 build/17S84 (6; dt:201)"
         #elseif os(tvOS)
         let currentDevice = UIDevice.current
         let osVersion = currentDevice.systemVersion.replacingOccurrences(of: ".", with: "_")
-        let fallbackAgent = "Mozilla/5.0 (\(currentDevice.model); CPU tv OS \(osVersion) like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13T534YI"
+        let fallbackAgent = "AppleTV/tvOS/\(osVersion)"
+        #elseif targetEnvironment(macCatalyst)
+        let currentDevice = UIDevice.current
+        let osVersion = currentDevice.systemVersion.replacingOccurrences(of: ".", with: "_")
+        let fallbackAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X \(osVersion)) AppleWebKit/603.2.4 (KHTML, like Gecko)"
         #else
         let currentDevice = UIDevice.current
         let osVersion = currentDevice.systemVersion.replacingOccurrences(of: ".", with: "_")
