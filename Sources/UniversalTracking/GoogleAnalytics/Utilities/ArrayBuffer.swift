@@ -34,6 +34,7 @@ final class ArrayBuffer<Element> {
 
     func append(_ element: Element) {
         lock.wait()
+        debugPrint("Will append element of \((element as? TrackingEvent)?.type) to an array that contains \(_elements.compactMap { ($0 as? TrackingEvent)?.type }.joined(separator: ","))")
         _elements.append(element)
         if _elements.count >= maxNoOfElements {
             let copyElements = _elements
@@ -59,7 +60,7 @@ final class ArrayBuffer<Element> {
         _ elements: [Element]
     ) {
         guard !elements.isEmpty else { return }
-        debugPrint("Will flush arrayBuffer with \(elements.endIndex) elements")
+        debugPrint("Will flush arrayBuffer with \(elements.endIndex) elements \(_elements.compactMap { ($0 as? TrackingEvent)?.type }.joined(separator: ","))")
         flushClosure(elements)
     }
 }
