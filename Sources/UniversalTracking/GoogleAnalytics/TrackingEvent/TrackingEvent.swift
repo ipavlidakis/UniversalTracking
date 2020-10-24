@@ -15,38 +15,12 @@ struct TrackingEvent {
 extension TrackingEvent {
 
     static func forScreenView(
-        appName: String,
-        appVersion: String,
-        appIdentifier: String,
         screenClass: String,
-        screenTitle: String,
         additionalParamaters: [GAParam] = []
     ) -> TrackingEvent {
         let requiredParameters = [
             GAParam.Hit.hitType(.screenview),
-            GAParam.Apps.applicationName(appName),
-            GAParam.Apps.applicationVersion(appVersion),
-            GAParam.Apps.applicationID(appIdentifier),
-            GAParam.ContentInformation.screenName(screenTitle),
-            GAParam.ContentInformation.documentTitle(screenTitle),
-        ]
-
-        return TrackingEvent(
-            parameters: requiredParameters.combineUniquely(with: additionalParamaters)
-        )
-    }
-
-    static func forPageView(
-        appIdentifier: String,
-        screenClass: String,
-        screenTitle: String,
-        additionalParamaters: [GAParam] = []
-    ) -> TrackingEvent {
-        let requiredParameters = [
-            GAParam.Hit.hitType(.pageview),
-            GAParam.ContentInformation.documentHostName(appIdentifier),
-            GAParam.ContentInformation.documentPath("/\(screenClass)"),
-            GAParam.ContentInformation.documentTitle(screenTitle),
+            GAParam.ContentInformation.screenName(screenClass)
         ]
 
         return TrackingEvent(
@@ -62,7 +36,6 @@ extension TrackingEvent {
         let requiredParameters = [
             GAParam.Session.sessionControl(start ? "start" : "end"),
             GAParam.ContentInformation.documentLocationURL(appIdentifier),
-
         ]
 
         return TrackingEvent(
