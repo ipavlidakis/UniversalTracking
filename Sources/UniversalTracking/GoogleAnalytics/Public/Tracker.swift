@@ -133,7 +133,9 @@ extension UniversalGoogleAnalytics.Tracker {
             .map { $0.joined(separator: "&") }
             .joined(separator: "\n")
 
-        debugPrint("Batch of \(trackingEvents.endIndex):\n\(body)")
+        debugPrint("Batch of \(trackingEvents.endIndex) - START")
+        debugPrint(body)
+        debugPrint("Batch of \(trackingEvents.endIndex) - END")
 
         var request = URLRequest(
             url: batchURL,
