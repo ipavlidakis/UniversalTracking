@@ -130,7 +130,8 @@ extension UniversalGoogleAnalytics.Tracker {
             .map { $0.map { "\($0.parameter)=\($0.value)" } }
             .map { $0.joined(separator: "&") }
             .joined(separator: "\n")
-            .data(using: .utf8)
+
+        debugPrint("Batch of \(trackingEvents.endIndex):\n\(body)")
 
         var request = URLRequest(
             url: batchURL,
@@ -139,7 +140,7 @@ extension UniversalGoogleAnalytics.Tracker {
         )
 
         request.httpMethod = "POST"
-        request.httpBody = body
+        request.httpBody = body.data(using: .utf8)
 
         session.dataTask(with: request) { (data, response, error) in
             guard (response as? HTTPURLResponse)?.statusCode == 200 else {
