@@ -27,7 +27,7 @@ extension TrackingEvent {
             GAParam.Apps.applicationName(appName),
             GAParam.Apps.applicationVersion(appVersion),
             GAParam.Apps.applicationID(appIdentifier),
-            GAParam.ContentInformation.documentPath("/\(screenClass)"),
+            GAParam.ContentInformation.screenName(screenTitle),
             GAParam.ContentInformation.documentTitle(screenTitle),
         ]
 
